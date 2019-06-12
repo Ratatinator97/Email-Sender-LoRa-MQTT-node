@@ -1,14 +1,20 @@
-const http = require('http');
+var mqtt    = require('mqtt');
+var options = {
+  username: "indoor-lora-insa",
+  password: "ttn-account-v2.UhQI53_Tdv9Z9BM9153WGUcgAdCf35hlXvSn9tlxtHc",
 
-const hostname = '127.0.0.1';
-const port = 3000;
+}
+var client  = mqtt.connect("mqtt://eu.thethings.network",options);
 
-const server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello World\n');
+client.subscribe("+/devices/+/up");
+
+client.on("connect",function(){	
+  console.log("connected"+" "+client.connected);
 });
-
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+client.on('message', function(topic, message, packet){
+  console.log(message);
+});
+client.on("error",function(error){
+  console.log("Can't connect" + error);
+  process.exit(1)
 });
